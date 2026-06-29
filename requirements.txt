@@ -1,0 +1,5 @@
+flask>=2.3
+python-docx>=0.8.11
+Werkzeug>=2.3
+lxml>=4.9
+fonttools>=4.0

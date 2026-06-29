@@ -1,0 +1,210 @@
+{
+  "font_mapping": {
+    "方正小标宋简体": "方正小标宋简体",
+    "楷体_GB2312": "楷体_GB2312",
+    "仿宋_GB2312": "仿宋_GB2312",
+    "黑体": "黑体",
+    "宋体": "宋体"
+  },
+  "presets": {
+    "党政公文标准": {
+      "description": "",
+      "title": {
+        "font_cn": "方正小标宋简体",
+        "font_en": "SimSun",
+        "size_pt": 22,
+        "bold": true,
+        "alignment": "center",
+        "line_spacing_rule": "fixed",
+        "line_spacing_pt": 30,
+        "space_before": 0,
+        "space_after": 0
+      },
+      "author": {
+        "font_cn": "楷体_GB2312",
+        "font_en": "KaiTi",
+        "size_pt": 17,
+        "bold": false,
+        "alignment": "center",
+        "line_spacing_rule": "fixed",
+        "line_spacing_pt": 30,
+        "space_before": 0,
+        "space_after": 0
+      },
+      "heading1": {
+        "font_cn": "黑体",
+        "font_en": "SimHei",
+        "size_pt": 17,
+        "bold": false,
+        "alignment": "left",
+        "line_spacing_rule": "fixed",
+        "line_spacing_pt": 30,
+        "space_before": 0,
+        "space_after": 0,
+        "number_format": "chinese_dash"
+      },
+      "heading2": {
+        "font_cn": "楷体_GB2312",
+        "font_en": "KaiTi",
+        "size_pt": 17,
+        "bold": false,
+        "alignment": "left",
+        "line_spacing_rule": "fixed",
+        "line_spacing_pt": 30,
+        "space_before": 0,
+        "space_after": 0,
+        "number_format": "paren_chinese"
+      },
+      "heading3": {
+        "font_cn": "仿宋_GB2312",
+        "font_en": "FangSong",
+        "size_pt": 17,
+        "bold": true,
+        "alignment": "left",
+        "line_spacing_rule": "fixed",
+        "line_spacing_pt": 30,
+        "space_before": 0,
+        "space_after": 0,
+        "number_format": "dot_number"
+      },
+      "body": {
+        "font_cn": "仿宋_GB2312",
+        "font_en": "FangSong",
+        "size_pt": 17,
+        "bold": false,
+        "alignment": "justify",
+        "line_spacing_rule": "multiple",
+        "line_spacing_multiple": 1.34,
+        "space_before": 0,
+        "space_after": 0,
+        "first_line_indent": 4
+      },
+      "page": {
+        "margin_top": 3.8,
+        "margin_bottom": 3.2,
+        "margin_left": 2.7,
+        "margin_right": 2.7
+      },
+      "page_number": {
+        "position": "right_bottom",
+        "format": "- {n} -",
+        "font_cn": "宋体",
+        "font_en": "SimSun",
+        "size_pt": 14
+      },
+      "numbering": {
+        "style": "standard",
+        "standard": {
+          "level1": "chinese_dash",
+          "level2": "paren_chinese",
+          "level3": "dot_number"
+        },
+        "academic": {
+          "level1": "dot_number",
+          "level2": "dot_dot_number",
+          "level3": "dot_dot_dot_number"
+        }
+      }
+    },
+    "通用学术格式": {
+      "description": "通用学术论文格式，宋体小四，1.5倍行距",
+      "page": {
+        "paper_size": "A4",
+        "margin_top": 2.54,
+        "margin_bottom": 2.54,
+        "margin_left": 3.17,
+        "margin_right": 3.17
+      },
+      "title": {
+        "font_cn": "黑体",
+        "font_en": "STHeiti",
+        "size_pt": 16,
+        "bold": true,
+        "alignment": "center",
+        "line_spacing_rule": "multiple",
+        "line_spacing_multiple": 1.5,
+        "space_before": 0,
+        "space_after": 6
+      },
+      "author": {
+        "font_cn": "方正仿宋简体",
+        "font_en": "FZFangSong-Z02S",
+        "size_pt": 12,
+        "bold": false,
+        "alignment": "center",
+        "line_spacing_rule": "multiple",
+        "line_spacing_multiple": 1.5,
+        "space_before": 6,
+        "space_after": 6
+      },
+      "heading1": {
+        "font_cn": "黑体",
+        "font_en": "STHeiti",
+        "size_pt": 14,
+        "bold": true,
+        "alignment": "left",
+        "line_spacing_rule": "multiple",
+        "line_spacing_multiple": 1.5,
+        "space_before": 12,
+        "space_after": 6,
+        "number_format": "dot_number"
+      },
+      "heading2": {
+        "font_cn": "楷体",
+        "font_en": "KaiTi SC",
+        "size_pt": 13,
+        "bold": false,
+        "alignment": "left",
+        "line_spacing_rule": "multiple",
+        "line_spacing_multiple": 1.5,
+        "space_before": 6,
+        "space_after": 6,
+        "number_format": "dot_dot_number"
+      },
+      "heading3": {
+        "font_cn": "方正仿宋简体",
+        "font_en": "FZFangSong-Z02S",
+        "size_pt": 12,
+        "bold": true,
+        "alignment": "left",
+        "line_spacing_rule": "multiple",
+        "line_spacing_multiple": 1.5,
+        "space_before": 6,
+        "space_after": 6,
+        "number_format": "dot_dot_dot_number"
+      },
+      "body": {
+        "font_cn": "方正仿宋简体",
+        "font_en": "FZFangSong-Z02S",
+        "size_pt": 12,
+        "bold": false,
+        "alignment": "justify",
+        "line_spacing_rule": "multiple",
+        "line_spacing_multiple": 1.5,
+        "space_before": 0,
+        "space_after": 0,
+        "first_line_indent": 2
+      },
+      "page_number": {
+        "position": "center_bottom",
+        "font_cn": "宋体",
+        "font_en": "SimSun",
+        "size_pt": 12,
+        "format": "{n}"
+      },
+      "numbering": {
+        "style": "academic",
+        "standard": {
+          "level1": "dot_number",
+          "level2": "dot_dot_number",
+          "level3": "dot_dot_dot_number"
+        },
+        "academic": {
+          "level1": "dot_number",
+          "level2": "dot_dot_number",
+          "level3": "dot_dot_dot_number"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Word 格式修改器</title>
+<style>
+/* ═─ 瑞士国际主义风格 · IKB 克莱因蓝 ─────────────────── */
+:root {
+  --paper:     #fafaf8;
+  --paper-rgb: 250,250,248;
+  --ink:       #0a0a0a;
+  --ink-rgb:   10,10,10;
+  --grey-1:    #f0f0ee;
+  --grey-2:    #d4d4d2;
+  --grey-3:    #737373;
+  --accent:    #002FA7;
+  --accent-rgb:0,47,167;
+  --accent-on: #ffffff;
+  --radius:    2px;
+  --font-sans:  "Helvetica Neue", "IBM Plex Sans", "Noto Sans SC", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", "Fira Code", monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 15px; }
+body {
+  font-family: var(--font-sans);
+  background: var(--grey-1);
+  color: var(--ink);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── 布局 ──────────────────────────────────────────────── */
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 40px;
+}
+header h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+header p {
+  font-size: 0.85rem;
+  color: var(--grey-3);
+}
+
+/* ── 卡片 ─────────────────────────────────────────────── */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--grey-2);
+  padding: 28px 32px;
+  margin-bottom: 24px;
+}
+.card-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey-3);
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--grey-2);
+}
+
+/* ── 两步流程指示器 ───────────────────────────────────── */
+.steps {
+  display: flex;
+  gap: 0;
+  margin-bottom: 32px;
+}
+.step {
+  flex: 1;
+  padding: 14px 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--grey-3);
+  background: var(--grey-1);
+  border: 1px solid var(--grey-2);
+  text-align: center;
+}
+.step.active {
+  background: var(--accent);
+  color: var(--accent-on);
+  border-color: var(--accent);
+}
+.step.done {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.step + .step { border-left: none; }
+
+/* ── 表单元素 ────────────────────────────────────────── */
+label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--grey-3);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+input[type="text"],
+input[type="number"],
+input[type="file"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--grey-2);
+  border-radius: 0;
+  outline: none;
+  transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+}
+select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23737373'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+
+/* ── 按钮 ────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 2px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn:hover { background: var(--ink); color: var(--paper); }
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-on);
+  border-color: var(--accent);
+}
+.btn-primary:hover { background: #001f7a; border-color: #001f7a; }
+.btn-sm { padding: 8px 16px; font-size: 0.75rem; }
+.btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+
+/* ── 拖拽区 ─────────────────────────────────────────── */
+.dropzone {
+  border: 2px dashed var(--grey-2);
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.dropzone:hover, .dropzone.dragover {
+  border-color: var(--accent);
+  background: rgba(var(--accent-rgb), 0.04);
+}
+.dropzone p { font-size: 0.9rem; color: var(--grey-3); }
+.dropzone strong { color: var(--accent); }
+
+/* ── 文件列表 ────────────────────────────────────────── */
+.file-list { list-style: none; }
+.file-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--grey-2);
+  font-size: 0.85rem;
+}
+.file-list li:last-child { border-bottom: none; }
+.file-name { font-weight: 600; }
+.file-meta { font-size: 0.75rem; color: var(--grey-3); }
+
+/* ── 参数面板（三块分组） ───────────────────────────── */
+.preset-bar {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.preset-bar > div { flex: 1; min-width: 200px; }
+
+.param-group {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--grey-2);
+}
+.param-group:last-child { border-bottom: none; }
+.param-group-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.param-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.param-row-2 { grid-template-columns: 1fr 1fr; }
+.param-row-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+/* ── 预览表格 ────────────────────────────────────────── */
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.preview-table th {
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey-3);
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--ink);
+}
+.preview-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--grey-2);
+  vertical-align: middle;
+}
+.preview-table tr:hover td { background: rgba(var(--accent-rgb), 0.04); }
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--grey-2);
+}
+.badge-title  { border-color: var(--accent); color: var(--accent); }
+.badge-author { border-color: #6b21a8; color: #6b21a8; }
+.badge-h1     { border-color: var(--ink); color: var(--ink); }
+.badge-h2     { color: var(--grey-3); }
+.badge-h3     { color: var(--grey-3); font-style: italic; }
+.badge-body   { color: var(--grey-3); font-weight: 400; }
+
+select.level-select {
+  width: auto;
+  padding: 4px 24px 4px 8px;
+  font-size: 0.78rem;
+  border: 1px solid var(--grey-2);
+}
+
+/* ── 结果区 ──────────────────────────────────────────── */
+.result-box {
+  background: var(--grey-1);
+  border-left: 3px solid var(--accent);
+  padding: 16px 20px;
+  font-size: 0.85rem;
+  margin-top: 16px;
+}
+.result-box a {
+  color: var(--accent);
+  text-decoration: underline;
+  font-weight: 600;
+}
+.result-box a:hover { text-decoration: none; }
+
+/* ── Checkbox ────────────────────────────────────────── */
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--ink);
+  cursor: pointer;
+  margin: 0;
+}
+.checkbox-label input[type="checkbox"] {
+  width: 16px; height: 16px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* ── 隐藏 ─────────────────────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ── 响应式 ──────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .app { padding: 20px 12px 60px; }
+  header { flex-direction: column; gap: 8px; }
+  .param-row { grid-template-columns: 1fr 1fr; }
+}
+/* ── 弹窗 ────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.modal {
+  background: var(--paper);
+  border: 1px solid var(--grey-2);
+  width: 540px; max-height: 85vh;
+  display: flex; flex-direction: column;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.18);
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--grey-2);
+  font-weight: 700; font-size: 0.85rem;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.modal-close {
+  background: none; border: 1px solid var(--grey-2);
+  width: 28px; height: 28px; cursor: pointer;
+  font-size: 0.9rem; display: flex;
+  align-items: center; justify-content: center;
+}
+.modal-body { padding: 20px 24px; overflow-y: auto; flex: 1; }
+.modal-footer {
+  padding: 14px 24px;
+  border-top: 1px solid var(--grey-2);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+.font-field { margin-bottom: 14px; }
+.font-field label {
+  display: block; font-size: 0.72rem; font-weight: 600;
+  color: var(--grey-3); margin-bottom: 5px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.font-field .field-row {
+  display: flex; gap: 8px; align-items: center;
+}
+.font-field input {
+  flex: 1; padding: 7px 10px; font-size: 0.82rem;
+  border: 1px solid var(--grey-2); background: var(--grey-1);
+  color: var(--ink); font-family: var(--font-mono);
+}
+.test-btn {
+  font-size: 0.72rem; padding: 7px 12px;
+  border: 1px solid var(--grey-2); background: var(--paper);
+  cursor: pointer; white-space: nowrap;
+}
+.test-btn:hover { background: var(--grey-1); }
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- 页头 -->
+  <header>
+    <div>
+      <h1>Word 格式修改器</h1>
+      <p>本地运行 · 断网可用 · 不调用 AI</p>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <span id="status" style="font-size:0.78rem;color:var(--grey-3);">正在连接…</span>
+      <button id="btn-font-settings" class="btn btn-outline" style="font-size:0.78rem;padding:6px 14px;">字体设置</button>
+    </div>
+  </header>
+
+  <!-- 步骤条 -->
+  <div class="steps">
+    <div class="step active" id="step1">1. 上传与预设</div>
+    <div class="step" id="step2">2. 预览与调整</div>
+    <div class="step" id="step3">3. 完成</div>
+  </div>
+
+  <!-- ═─ 第1步：上传与预设 ──────────────────────────── -->
+  <div id="panel-step1">
+
+    <!-- 预设选择 -->
+    <div class="card">
+      <div class="card-title">预设方案</div>
+      <div class="preset-bar">
+        <div>
+          <label>选择预设</label>
+          <select id="preset-select"></select>
+        </div>
+        <div>
+          <label>作者位置</label>
+          <select id="author-position">
+            <option value="before">标题下方（默认）</option>
+            <option value="after">文末右对齐</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-end;">
+          <button class="btn btn-sm" onclick="savePreset()">保存预设</button>
+          <button class="btn btn-sm" onclick="newPreset()">新增预设</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 参数面板：三块分组 -->
+    <div class="card">
+      <div class="card-title">格式参数（可微调，完成后点"保存预设"持久化）</div>
+
+      <!-- 块1：字体字号 -->
+      <div class="param-group">
+        <div class="param-group-title">① 字体字号</div>
+
+        <div class="param-row">
+          <div>
+            <label>文章标题 · 字体</label>
+            <input type="text" id="p-title-font" value="方正小标宋简体">
+          </div>
+          <div>
+            <label>文章标题 · 字号（pt）</label>
+            <input type="number" id="p-title-size" value="22">
+          </div>
+          <div>
+            <label>文章标题 · 加粗</label>
+            <select id="p-title-bold"><option value="0">否</option><option value="1">是</option></select>
+          </div>
+        </div>
+
+        <div class="param-row">
+          <div>
+            <label>作者 · 字体</label>
+            <input type="text" id="p-author-font" value="楷体">
+          </div>
+          <div>
+            <label>作者 · 字号（pt）</label>
+            <input type="number" id="p-author-size" value="17">
+          </div>
+        </div>
+
+        <div class="param-row">
+          <div>
+            <label>一级标题 · 字体</label>
+            <input type="text" id="p-h1-font" value="黑体">
+          </div>
+          <div>
+            <label>一级标题 · 字号（pt）</label>
+            <input type="number" id="p-h1-size" value="17">
+          </div>
+          <div>
+            <label>一级标题 · 加粗</label>
+            <select id="p-h1-bold"><option value="0">否</option><option value="1">是</option></select>
+          </div>
+        </div>
+
+        <div class="param-row">
+          <div>
+            <label>二级标题 · 字体</label>
+            <input type="text" id="p-h2-font" value="楷体">
+          </div>
+          <div>
+            <label>二级标题 · 字号（pt）</label>
+            <input type="number" id="p-h2-size" value="17">
+          </div>
+        </div>
+
+        <div class="param-row">
+          <div>
+            <label>三级标题 · 字体</label>
+            <input type="text" id="p-h3-font" value="仿宋 GB2312">
+          </div>
+          <div>
+            <label>三级标题 · 字号（pt）</label>
+            <input type="number" id="p-h3-size" value="17">
+          </div>
+          <div>
+            <label>三级标题 · 加粗</label>
+            <select id="p-h3-bold"><option value="1">是</option><option value="0">否</option></select>
+          </div>
+        </div>
+
+        <div class="param-row">
+          <div>
+            <label>正文 · 字体</label>
+            <input type="text" id="p-body-font" value="仿宋 GB2312">
+          </div>
+          <div>
+            <label>正文 · 字号（pt）</label>
+            <input type="number" id="p-body-size" value="17">
+          </div>
+        </div>
+      </div>
+
+      <!-- 块2：间距 -->
+      <div class="param-group">
+        <div class="param-group-title">② 间距</div>
+
+        <div class="param-row param-row-4">
+          <div><label>页边距 · 上（cm）</label><input type="number" id="p-mar-top"    value="3.8" step="0.1"></div>
+          <div><label>页边距 · 下（cm）</label><input type="number" id="p-mar-bottom" value="3.2" step="0.1"></div>
+          <div><label>页边距 · 左（cm）</label><input type="number" id="p-mar-left"   value="2.7" step="0.1"></div>
+          <div><label>页边距 · 右（cm）</label><input type="number" id="p-mar-right"  value="2.7" step="0.1"></div>
+        </div>
+
+        <div class="param-row param-row-4">
+          <div><label>标题行距（pt）</label><input type="number" id="p-title-line" value="30" step="1"></div>
+          <div><label>正文行距（倍数）</label><input type="number" id="p-body-line"  value="1.34" step="0.01"></div>
+          <div><label>段前（pt）</label><input type="number" id="p-space-before" value="0" step="1"></div>
+          <div><label>段后（pt）</label><input type="number" id="p-space-after"  value="0" step="1"></div>
+        </div>
+
+        <div class="param-row param-row-2">
+          <div>
+            <label>正文首行缩进（字符）</label>
+            <input type="number" id="p-indent" value="2" step="1">
+          </div>
+          <div>
+            <label>编号体系</label>
+            <select id="p-numbering-style">
+              <option value="standard">标准（一、 → （一） → 1.）</option>
+              <option value="academic">学术（1. → 1.1 → 1.1.1）</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 块3：其他 -->
+      <div class="param-group">
+        <div class="param-group-title">③ 其他</div>
+        <div class="param-row param-row-2">
+          <div>
+            <label>页码格式（用 {n} 代表页码）</label>
+            <input type="text" id="p-page-fmt" value="- {n} -">
+          </div>
+          <div>
+            <label>页码字号（pt）</label>
+            <input type="number" id="p-page-size" value="14">
+          </div>
+        </div>
+        <div class="param-row">
+          <label class="checkbox-label">
+            <input type="checkbox" id="p-skip-preview">
+            跳过预览，直接应用格式
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 文件上传 -->
+    <div class="card">
+      <div class="card-title">上传文件</div>
+            <p style="font-size:0.72rem;color:var(--grey-3);margin-top:4px;">支持 .docx / .txt / .md｜<strong>暂不支持 .doc 格式</strong>，请先在 Word 里另存为 .docx 再上传。</p>
+      <div class="dropzone" id="dropzone">
+        <p>拖拽 <strong>.docx</strong> 文件到此处，或 <strong>点击选择</strong></p>
+        <p style="margin-top:8px;font-size:0.78rem;color:var(--grey-3);">支持多选，一次处理多个文件</p>
+        <input type="file" id="file-input" accept=".docx" multiple style="display:none;">
+      </div>
+      <ul class="file-list" id="file-list"></ul>
+    </div>
+
+    <!-- 输出目录 -->
+    <div class="card">
+      <div class="card-title">输出设置</div>
+      <div class="param-row param-row-2">
+        <div>
+          <label>输出目录（留空 = 与原文件同目录）</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" id="output-dir" placeholder="默认与原文件同目录" style="flex:1;">
+            <button class="btn btn-sm" onclick="selectOutputDir()">选择目录</button>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-end;">
+          <label class="checkbox-label">
+            <input type="checkbox" id="chk-skip-preview2">
+            跳过预览，直接格式化
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:12px;">
+      <button class="btn btn-primary" id="btn-scan" disabled onclick="startScan()">扫描文件</button>
+    </div>
+  </div>
+
+  <!-- ═─ 第2步：预览与调整 ──────────────────────────── -->
+  <div id="panel-step2" class="hidden">
+
+    <div class="card">
+      <div class="card-title">扫描结果：<span id="scan-info"></span></div>
+      <div style="overflow-x:auto;">
+        <table class="preview-table" id="preview-table">
+          <thead>
+            <tr>
+              <th style="width:40px;">#</th>
+              <th style="width:140px;">识别结果</th>
+              <th>段落内容</th>
+            </tr>
+          </thead>
+          <tbody id="preview-tbody"></tbody>
+        </table>
+      </div>
+      <p style="margin-top:12px;font-size:0.78rem;color:var(--grey-3);">
+        下拉可修改级别。「文章标题」和「作者」需手动确认。修改后点"确认并格式化"。
+      </p>
+    </div>
+
+    <div style="display:flex;gap:12px;margin-top:20px;">
+      <button class="btn" onclick="goToStep(1)">← 重新上传</button>
+      <button class="btn btn-primary" id="btn-confirm" onclick="confirmAndFormat()">确认并格式化</button>
+    </div>
+  </div>
+
+  <!-- ═─ 第3步：完成 ─────────────────────────────────── -->
+  <div id="panel-step3" class="hidden">
+
+    <div class="card">
+      <div class="card-title">处理完成</div>
+      <div id="result-list"></div>
+      <div style="margin-top:20px;display:flex;gap:12px;">
+        <button class="btn" onclick="goToStep(1)">← 处理更多文件</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ═─ JavaScript ─────────────────────────────────────────── -->
+<script>
+let uploadedFiles = [];   // [{file_id, filename, original_name}]
+let scanResults  = [];   // 当前扫描结果
+let currentFileId = "";
+
+/* ── 初始化 ──────────────────────────────────────────── */
+window.addEventListener("DOMContentLoaded", () => {
+  checkStatus();
+  loadPresets();
+  setupDropzone();
+  const btnFont = document.getElementById("btn-font-settings");
+  if (btnFont) btnFont.addEventListener("click", openFontModal);
+});
+
+async function checkStatus() {
+  try {
+    const r = await fetch("/api/status");
+    const d = await r.json();
+    document.getElementById("status").textContent = "● 服务已连接";
+    document.getElementById("status").style.color = "var(--ink)";
+  } catch(e) {
+    document.getElementById("status").textContent = "● 无法连接服务，请先启动 server.py";
+    document.getElementById("status").style.color = "#cc0000";
+  }
+}
+
+/* ── 预设 ──────────────────────────────────────────── */
+async function loadPresets() {
+  const r = await fetch("/api/presets");
+  const d = await r.json();
+  const sel = document.getElementById("preset-select");
+  sel.innerHTML = "";
+  (d.presets || []).forEach(p => {
+    const o = document.createElement("option");
+    o.value = p.name;
+    o.textContent = p.name;
+    sel.appendChild(o);
+  });
+  if (sel.options.length > 0) {
+    sel.selectedIndex = 0;
+    loadPresetDetail(sel.value);
+  }
+  sel.onchange = () => loadPresetDetail(sel.value);
+}
+
+async function loadPresetDetail(name) {
+  const r = await fetch(`/api/preset/${encodeURIComponent(name)}`);
+  const d = await r.json();
+  if (d.error) return;
+  // 填充参数面板
+  setIfExists("p-title-font",  d.title?.font_cn);
+  setIfExists("p-title-size",  d.title?.size_pt);
+  setIfExists("p-title-bold",  d.title?.bold ? "1" : "0");
+  setIfExists("p-author-font", d.author?.font_cn);
+  setIfExists("p-author-size", d.author?.size_pt);
+  setIfExists("p-h1-font",  d.heading1?.font_cn);
+  setIfExists("p-h1-size",  d.heading1?.size_pt);
+  setIfExists("p-h1-bold",  d.heading1?.bold ? "1" : "0");
+  setIfExists("p-h2-font",  d.heading2?.font_cn);
+  setIfExists("p-h2-size",  d.heading2?.size_pt);
+  setIfExists("p-h3-font",  d.heading3?.font_cn);
+  setIfExists("p-h3-size",  d.heading3?.size_pt);
+  setIfExists("p-h3-bold",  d.heading3?.bold ? "1" : "0");
+  setIfExists("p-body-font",  d.body?.font_cn);
+  setIfExists("p-body-size",  d.body?.size_pt);
+  setIfExists("p-mar-top",    d.page?.margin_top);
+  setIfExists("p-mar-bottom", d.page?.margin_bottom);
+  setIfExists("p-mar-left",   d.page?.margin_left);
+  setIfExists("p-mar-right",  d.page?.margin_right);
+  setIfExists("p-title-line", d.title?.line_spacing_pt);
+  setIfExists("p-body-line",  d.body?.line_spacing_multiple);
+  setIfExists("p-page-fmt",   d.page_number?.format);
+  setIfExists("p-page-size",  d.page_number?.size_pt);
+  setIfExists("p-indent",    d.body?.first_line_indent);
+  setIfExists("p-space-before", d.title?.space_before ?? d.heading1?.space_before);
+  setIfExists("p-space-after",  d.title?.space_after  ?? d.heading1?.space_after);
+  // 编号体系
+  const ns = d.numbering?.style || "standard";
+  document.getElementById("p-numbering-style").value = ns;
+}
+
+function setIfExists(id, val) {
+  const el = document.getElementById(id);
+  if (el && val !== undefined) el.value = val;
+}
+
+async function savePreset() {
+  const name = document.getElementById("preset-select").value;
+  const data = collectPresetData();
+  const r = await fetch(`/api/preset/${encodeURIComponent(name)}`, {
+    method: "PUT",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  });
+  const d = await r.json();
+  alert(d.ok ? `预设「${name}」已保存` : "保存失败：" + (d.error || ""));
+}
+
+async function newPreset() {
+  const name = prompt("请输入新预设名称：");
+  if (!name) return;
+  const data = collectPresetData();
+  data.description = name;
+  const r = await fetch(`/api/preset/${encodeURIComponent(name)}`, {
+    method: "PUT",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(data)
+  });
+  if (r.ok) {
+    await loadPresets();
+    document.getElementById("preset-select").value = name;
+    alert(`预设「${name}」已创建`);
+  }
+}
+
+function collectPresetData() {
+  const b = id => document.getElementById(id).value === "1";
+  const n = id => parseFloat(document.getElementById(id).value) || 0;
+  const s = id => document.getElementById(id).value;
+  return {
+    description: "",
+    title: {
+      font_cn: s("p-title-font"), font_en: "SimSun",
+      size_pt: n("p-title-size"), bold: b("p-title-bold"),
+      alignment: "center",
+      line_spacing_rule: "fixed", line_spacing_pt: n("p-title-line"),
+      space_before: n("p-space-before"), space_after: n("p-space-after"),
+    },
+    author: {
+      font_cn: s("p-author-font"), font_en: "KaiTi",
+      size_pt: n("p-author-size"), bold: false,
+      alignment: "center",
+      line_spacing_rule: "fixed", line_spacing_pt: n("p-title-line"),
+      space_before: 0, space_after: 0,
+    },
+    heading1: {
+      font_cn: s("p-h1-font"), font_en: "SimHei",
+      size_pt: n("p-h1-size"), bold: b("p-h1-bold"),
+      alignment: "left",
+      line_spacing_rule: "fixed", line_spacing_pt: n("p-title-line"),
+      space_before: n("p-space-before"), space_after: n("p-space-after"),
+      number_format: "chinese_dash",
+    },
+    heading2: {
+      font_cn: s("p-h2-font"), font_en: "KaiTi",
+      size_pt: n("p-h2-size"), bold: false,
+      alignment: "left",
+      line_spacing_rule: "fixed", line_spacing_pt: n("p-title-line"),
+      space_before: n("p-space-before"), space_after: n("p-space-after"),
+      number_format: "paren_chinese",
+    },
+    heading3: {
+      font_cn: s("p-h3-font"), font_en: "FangSong",
+      size_pt: n("p-h3-size"), bold: b("p-h3-bold"),
+      alignment: "left",
+      line_spacing_rule: "fixed", line_spacing_pt: n("p-title-line"),
+      space_before: n("p-space-before"), space_after: n("p-space-after"),
+      number_format: "dot_number",
+    },
+    body: {
+      font_cn: s("p-body-font"), font_en: "FangSong",
+      size_pt: n("p-body-size"), bold: false,
+      alignment: "justify",
+      line_spacing_rule: "multiple", line_spacing_multiple: n("p-body-line"),
+      space_before: 0, space_after: 0,
+      first_line_indent: n("p-indent"),
+    },
+    page: {
+      margin_top: n("p-mar-top"), margin_bottom: n("p-mar-bottom"),
+      margin_left: n("p-mar-left"), margin_right: n("p-mar-right"),
+    },
+    page_number: {
+      position: "right_bottom", format: s("p-page-fmt"),
+      font_cn: "宋体", font_en: "SimSun", size_pt: n("p-page-size"),
+    },
+    numbering: {
+      style: s("p-numbering-style"),
+      standard: {level1:"chinese_dash", level2:"paren_chinese", level3:"dot_number"},
+      academic: {level1:"dot_number", level2:"dot_dot_number", level3:"dot_dot_dot_number"},
+    },
+  };
+}
+
+/* ── 拖拽上传 ───────────────────────────────────────── */
+function setupDropzone() {
+  const dz  = document.getElementById("dropzone");
+  const inp = document.getElementById("file-input");
+
+  dz.addEventListener("click", () => inp.click());
+  inp.addEventListener("change", () => handleFiles(inp.files));
+
+  dz.addEventListener("dragover", e => { e.preventDefault(); dz.classList.add("dragover"); });
+  dz.addEventListener("dragleave", () => dz.classList.remove("dragover"));
+  dz.addEventListener("drop", e => {
+    e.preventDefault();
+    dz.classList.remove("dragover");
+    handleFiles(e.dataTransfer.files);
+  });
+}
+
+async function handleFiles(fileList) {
+  const fd = new FormData();
+  for (const f of fileList) fd.append("files", f);
+  const r = await fetch("/api/upload", {method: "POST", body: fd});
+  const d = await r.json();
+  if (d.ok) {
+    uploadedFiles = d.files;
+    renderFileList();
+    document.getElementById("btn-scan").disabled = false;
+  }
+}
+
+function renderFileList() {
+  const ul = document.getElementById("file-list");
+  ul.innerHTML = "";
+  uploadedFiles.forEach(f => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="file-name">${f.original_name}</span>
+                    <span class="file-meta">ID: ${f.file_id.slice(0,8)}…</span>`;
+    ul.appendChild(li);
+  });
+}
+
+/* ── 选择输出目录 ──────────────────────────────────── */
+async function selectOutputDir() {
+  // 浏览器出于安全限制不能直接选目录，这里用输入路径的方式
+  // 实际使用可以通过"选择文件"来间接指定目录
+  const path = prompt("请输入输出目录的绝对路径（留空则与原文件同目录）：",
+                     document.getElementById("output-dir").value);
+  if (path !== null) {
+    document.getElementById("output-dir").value = path;
+  }
+}
+
+/* ── 步骤切换 ───────────────────────────────────────── */
+function goToStep(n) {
+  ["panel-step1","panel-step2","panel-step3"].forEach((id, i) => {
+    document.getElementById(id).classList.toggle("hidden", i + 1 !== n);
+  });
+  document.getElementById("step1").className = "step" + (n === 1 ? " active" : (n > 1 ? " done" : ""));
+  document.getElementById("step2").className = "step" + (n === 2 ? " active" : (n > 2 ? " done" : ""));
+  document.getElementById("step3").className = "step" + (n === 3 ? " active" : "");
+}
+
+/* ── 扫描 ──────────────────────────────────────────── */
+async function startScan() {
+  if (uploadedFiles.length === 0) return;
+  const file = uploadedFiles[0];  // 先处理第一个
+  currentFileId = file.file_id;
+
+  const r = await fetch(`/api/scan/${file.file_id}`);
+  const d = await r.json();
+  if (!d.ok) { alert("扫描失败：" + (d.error || "")); return; }
+
+  scanResults = d.results || [];
+  document.getElementById("scan-info").textContent =
+    `共 ${d.total} 段，识别到 ${scanResults.filter(r=>r.level>0).length} 个标题`;
+
+  renderPreviewTable();
+  goToStep(2);
+}
+
+function renderPreviewTable() {
+  const tbody = document.getElementById("preview-tbody");
+  tbody.innerHTML = "";
+  const levels = [
+    {v:0, label:"正文"},
+    {v:-1, label:"文章标题"},
+    {v:-2, label:"作者"},
+    {v:1, label:"一级"},
+    {v:2, label:"二级"},
+    {v:3, label:"三级"},
+    {v:4, label:"四级"},
+  ];
+  scanResults.forEach((row, i) => {
+    const tr = document.createElement("tr");
+    // #
+    const td0 = document.createElement("td");
+    td0.textContent = row.index;
+    tr.appendChild(td0);
+    // 级别下拉
+    const td1 = document.createElement("td");
+    const sel = document.createElement("select");
+    sel.className = "level-select";
+    sel.dataset.idx = row.index;
+    levels.forEach(lv => {
+      const o = document.createElement("option");
+      o.value = lv.v;
+      o.textContent = lv.label;
+      o.selected = (row.level === lv.v);
+      sel.appendChild(o);
+    });
+    // 加 badge
+    const badge = document.createElement("span");
+    badge.className = "badge " + (row.is_title ? "badge-title" : row.is_author ? "badge-author" :
+      row.level===1?"badge-h1":row.level===2?"badge-h2":row.level===3?"badge-h3":"badge-body");
+    badge.textContent = sel.options[sel.selectedIndex].textContent;
+    sel.onchange = () => {
+      badge.textContent = sel.options[sel.selectedIndex].textContent;
+      badge.className = "badge " + (parseInt(sel.value)===0?"badge-body":
+        parseInt(sel.value)===-1?"badge-title": parseInt(sel.value)===-2?"badge-author":
+        parseInt(sel.value)===1?"badge-h1":parseInt(sel.value)===2?"badge-h2":"badge-h3");
+    };
+    td1.appendChild(badge);
+    td1.appendChild(sel);
+    tr.appendChild(td1);
+    // 文字
+    const td2 = document.createElement("td");
+    td2.textContent = row.text;
+    td2.style.fontSize = "0.8rem";
+    td2.style.color = "var(--grey-3)";
+    tr.appendChild(td2);
+    tbody.appendChild(tr);
+  });
+}
+
+/* ── 确认并格式化 ─────────────────────────────────── */
+async function confirmAndFormat() {
+  const file = uploadedFiles.find(f => f.file_id === currentFileId);
+  if (!file) return;
+
+  // 收集用户调整后的级别
+  const levels = {};
+  document.querySelectorAll(".level-select").forEach(sel => {
+    levels[parseInt(sel.dataset.idx)] = parseInt(sel.value);
+  });
+
+  const presetData = collectPresetData();
+  const authorPos = document.getElementById("author-position").value;
+  const outputDir = document.getElementById("output-dir").value.trim();
+
+  // 先保存预设到服务端（确保格式一致）
+  await fetch(`/api/preset/${encodeURIComponent(document.getElementById("preset-select").value)}`, {
+    method: "PUT",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(presetData)
+  });
+
+  // 从用户调整后的下拉里，找文章标题（-1）和作者（-2）的实际段落索引
+  let titleIdx = 0, authorIdx = 1;
+  document.querySelectorAll(".level-select").forEach(sel => {
+    if (parseInt(sel.value) === -1) titleIdx  = parseInt(sel.dataset.idx);
+    if (parseInt(sel.value) === -2) authorIdx = parseInt(sel.dataset.idx);
+  });
+
+  const body = {
+    file_id: file.file_id,
+    preset_name: document.getElementById("preset-select").value,
+    levels: levels,
+    title_index: titleIdx,
+    author_index: authorIdx,
+    author_position: authorPos,
+    output_dir: outputDir || "",
+  };
+
+  const r = await fetch("/api/format", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(body)
+  });
+  const d = await r.json();
+  if (!d.ok) { alert("格式化失败：" + (d.error || "")); return; }
+
+  // 显示结果
+  showResults([d]);
+  goToStep(3);
+}
+
+
+function showResults(results) {
+  const box = document.getElementById("result-list");
+  box.innerHTML = "";
+  results.forEach(d => {
+    const div = document.createElement("div");
+    div.className = "result-box";
+    const path = d.output_path || d.saved_to || "";
+    const name = d.output_name || "";
+    const url  = d.download_url || "";
+    div.innerHTML = `
+      <p>✓ 处理完成！共处理 ${d.total_paragraphs || "?"} 段。</p>
+            <p style="margin-top:8px;font-size:0.72rem;color:#b45309;">⚠️ 页码需在 Word 中按 F9 更新域（或直接打印预览即更新）。</p>
+      <p style="margin-top:8px;">输出文件：<strong>${name}</strong></p>
+      <p>保存位置：<code style="font-size:0.78rem;word-break:break-all;">${path}</code></p>
+      <p style="margin-top:10px;">
+        <a href="${url}" download="${name}">⬇ 立即下载</a>
+      </p>
+    `;
+    box.appendChild(div);
+  });
+}
+
+// ── 字体设置弹窗 ────────────────────────────────
+function openFontModal() {
+  document.getElementById('font-modal').style.display = 'flex';
+  populateFontSelects();
+  loadFontMapping();
+}
+function closeFontModal() {
+  document.getElementById('font-modal').style.display = 'none';
+}
+function loadFontMapping() {
+  fetch('/api/font-mapping').then(r=>r.json()).then(d=>{
+    if(!d.ok) return;
+    const m = d.mapping || {};
+    // 把映射值填入输入框（中文字段）
+    const roles = {'title':'fm-title-cn','author':'fm-author-cn','h1':'fm-h1-cn','h2':'fm-h2-cn','h3':'fm-h3-cn','body':'fm-body-cn'};
+    for(const [k,v] of Object.entries(roles)) {
+      const el = document.getElementById(v);
+      if(el && m[k+'_cn']) el.value = m[k+'_cn'];
+    }
+  });
+}
+function saveFontMapping() {
+  const roles = {'title':'fm-title-cn','author':'fm-author-cn','h1':'fm-h1-cn','h2':'fm-h2-cn','h3':'fm-h3-cn','body':'fm-body-cn'};
+  const mapping = {};
+  for(const [k,v] of Object.entries(roles)) {
+    const el = document.getElementById(v);
+    if(el && el.value.trim()) mapping[k+'_cn'] = el.value.trim();
+  }
+  fetch('/api/font-mapping', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({mapping})})
+    .then(r=>r.json()).then(d=>{
+      if(d.ok) { closeFontModal(); alert('字体映射已保存'); }
+      else alert('保存失败：' + (d.error||''));
+    });
+}
+function testFont(role) {
+  const ids = {title:'fm-title-cn',author:'fm-author-cn',h1:'fm-h1-cn',h2:'fm-h2-cn',h3:'fm-h3-cn',body:'fm-body-cn'};
+  const font_cn = document.getElementById(ids[role]).value.trim();
+  if(!font_cn) { alert('请先输入字体名'); return; }
+  fetch('/api/test-font', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({font_cn, font_en: font_cn})})
+    .then(r=>r.json()).then(d=>{
+      if(d.ok) window.open(d.download_url, '_blank');
+      else alert('测试失败：' + (d.error||''));
+    });
+}
+async function populateFontSelects() {
+  const r = await fetch('/api/fonts');
+  const d = await r.json();
+  if (!d.ok) return;
+  // 合并推荐和全部，去重
+  const list = [].concat(d.recommended || [], d.all || []);
+  const seen = new Set();
+  const fonts = [];
+  list.forEach(item => {
+    if (!seen.has(item.name)) { seen.add(item.name); fonts.push(item.name); }
+  });
+  // 填充所有 .font-select 下拉框
+  document.querySelectorAll('.font-select').forEach(sel => {
+    const v = sel.value;
+    sel.innerHTML = '<option value="">-- 请选择字体 --</option>';
+    fonts.forEach(n => {
+      const o = document.createElement('option');
+      o.value = n;
+      o.textContent = n;
+      sel.appendChild(o);
+    });
+    if (v) sel.value = v;
+  });
+}
+</script>
+
+<!-- 字体设置弹窗 -->
+<div id="font-modal" class="modal-overlay" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <span>字体设置</span>
+      <button class="modal-close" onclick="closeFontModal()">✕</button>
+    </div>
+    <div class="modal-body" id="font-modal-body">
+      <p style="font-size:0.78rem;color:var(--grey-3);margin-bottom:16px;">
+        设置各用途对应的系统字体名。保存后在格式化时使用。<br>
+        ℹ️ 不知道字体名？在 Word 里打开字体下拉列表查看，或点击「测试」生成样例文件确认。
+      </p>
+      <div class="font-field">
+        <label>文章标题（中文字体）</label>
+        <div class="field-row">
+          <select id="fm-title-cn" class="font-select" style="flex:1;padding:7px 10px;font-size:0.82rem;border:1px solid var(--grey-2);background:var(--grey-1);color:var(--ink);"></select>
+          <button class="test-btn" onclick="testFont('title')">测试</button>
+        </div>
+      </div>
+      <div class="font-field">
+        <label>作者（中文字体）</label>
+        <div class="field-row">
+          <select id="fm-author-cn" class="font-select" style="flex:1;padding:7px 10px;font-size:0.82rem;border:1px solid var(--grey-2);background:var(--grey-1);color:var(--ink);"></select>
+          <button class="test-btn" onclick="testFont('author')">测试</button>
+        </div>
+      </div>
+      <div class="font-field">
+        <label>一级标题（中文字体）</label>
+        <div class="field-row">
+          <select id="fm-h1-cn" class="font-select" style="flex:1;padding:7px 10px;font-size:0.82rem;border:1px solid var(--grey-2);background:var(--grey-1);color:var(--ink);"></select>
+          <button class="test-btn" onclick="testFont('h1')">测试</button>
+        </div>
+      </div>
+      <div class="font-field">
+        <label>二级标题（中文字体）</label>
+        <div class="field-row">
+          <select id="fm-h2-cn" class="font-select" style="flex:1;padding:7px 10px;font-size:0.82rem;border:1px solid var(--grey-2);background:var(--grey-1);color:var(--ink);"></select>
+          <button class="test-btn" onclick="testFont('h2')">测试</button>
+        </div>
+      </div>
+      <div class="font-field">
+        <label>三级标题（中文字体）</label>
+        <div class="field-row">
+          <select id="fm-h3-cn" class="font-select" style="flex:1;padding:7px 10px;font-size:0.82rem;border:1px solid var(--grey-2);background:var(--grey-1);color:var(--ink);"></select>
+          <button class="test-btn" onclick="testFont('h3')">测试</button>
+        </div>
+      </div>
+      <div class="font-field">
+        <label>正文（中文字体）</label>
+        <div class="field-row">
+          <select id="fm-body-cn" class="font-select" style="flex:1;padding:7px 10px;font-size:0.82rem;border:1px solid var(--grey-2);background:var(--grey-1);color:var(--ink);"></select>
+          <button class="test-btn" onclick="testFont('body')">测试</button>
+        </div>
+      </div>
+      <div id="font-suggest" style="margin-top:12px;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeFontModal()">取消</button>
+      <button class="btn btn-accent" onclick="saveFontMapping()">保存并关闭</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
