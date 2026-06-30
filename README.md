@@ -4,10 +4,10 @@
 
 **离线运行，不联网，不调用 AI，完全本地处理。**
 
-[![macOS](https://img.shields.io/badge/macOS-✓-blue)](https://github.com/codingnoob4ever/WordFormatter)
-[![Windows](https://img.shields.io/badge/Windows-✓-blue)](https://github.com/codingnoob4ever/WordFormatter)
+[![macOS](https://img.shields.io/badge/macOS-✓-blue)](https://github.com/ainenge/WordFormatter)
+[![Windows](https://img.shields.io/badge/Windows-✓-blue)](https://github.com/ainenge/WordFormatter)
 [![Python](https://img.shields.io/badge/Python-3.9+-green)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow)](https://github.com/codingnoob4ever/WordFormatter/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](https://github.com/ainenge/WordFormatter/blob/main/LICENSE)
 
 ---
 
